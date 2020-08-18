@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
 
+import java.text.MessageFormat;
+import java.time.Duration;
 import java.time.Instant;
 
 class CalculatorTest {
@@ -75,6 +77,35 @@ class CalculatorTest {
     static public void showTestDuration() {
         System.out.println("Appel après tous les tests");
         Instant endedAt = Instant.now();
+        long duration = Duration.between(startedAt, endedAt).toMillis();
+        System.out.println(MessageFormat.format("Durée des tests : {0} ms", duration));
     }
+
+    // Grâce à ces quatre annotations, ce qui est intéressant, c'est que JUnit ne vous impose pas d'effectuer ces
+    // actions dans des méthodes avec un nommage spécifique comme  setUp  ou  tearDown()  (c'était le cas avec les
+    // anciennes versions de JUnit). Donc, profitez-en, soyez descriptif dans vos noms de méthodes !
+
+    // Pourquoi ces méthodes et la variables startedAt sont-elles statiques ?
+
+    // C'est un héritage des anciennes versions de JUnit. Les méthodes appelées avant ou après tous les tests sont
+    // donc statiques car considérées comme liées à l'objet de la classe de test, et non à une instance particulière.
+
+    // En fait, ces méthodes pourraient très bien être déclarées comme étant non statiques, mais vous devrez ajouter
+    // l'annotation @TestInstance(Lifecycle.PER_CLASS) à la classe de tests.
+
+    // Pour ce cours, je code avec JUnit 5. Si vous êtes amené à coder sur des projets existants avec JUnit 4,
+    // les noms des annotations diffèrent légèrement.
+
+    // =================================================================================================================
+    //              Jouez avec les entrants et les sortants grâce aux tests paramétrés
+    // =================================================================================================================
+
+    // Vous avez déjà vu l’annotation @Test. Imaginez que vous souhaitiez effectuer le même traitement de tests
+    // (l'étape Act), sur des entrants différents (de l'étape Arrange), afin de vérifier différents cas de figure.
+
+    // Pour rappel :
+    //  * étape Arrange : je paramètre les entrants des tests ;
+    //  * étape Act : j'effectue l'action sur la classe à tester ;
+    //  * étape Assert : je vérifie les résultats (sortants) de l'action.
 
 }
