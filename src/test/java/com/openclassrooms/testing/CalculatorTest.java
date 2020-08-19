@@ -202,4 +202,30 @@ class CalculatorTest {
     // N'abusez pas de l'annotation @Timeout. En effet, dans un travail d'équipe, tout le monde peut exécuter
     // les tests, et vous ne maîtrisez pas la puissance de la machine qui va exécuter les tests. Vous risqueriez
     // d'obtenir des faux positifs à cause d'un ordinateur lent ou d'un serveur surchargé.
+
+    /*
+    Annotation                                               Quand l’utiliser
+
+    @BeforeEach                                              Exécutez une méthode avant chaque test. C’est un très
+                                                             bon emplacement pour installer ou organiser un prérequis
+                                                             pour vos tests.
+
+    @AfterEach                                               Exécutez une méthode après chaque test. C’est un très bon
+                                                             emplacement pour nettoyer ou satisfaire à une postcondition.
+
+    @BeforeAll                                               Désignez une méthode statique pour qu’elle soit exécutée
+                                                             avant tous vos tests. Vous pouvez l’utiliser pour installer
+                                                             d’autres variables statiques pour vos tests.
+
+    @AfterAll                                                Désignez une méthode statique pour qu’elle soit exécutée
+                                                             après tous vos tests. Vous pouvez utiliser ceci pour
+                                                             nettoyer les dépendances statiques.
+
+    @ParametrizedTest                                        Vous souhaitez réutiliser le même test avec plusieurs entrants
+                                                             (@ValueSource) voire plusieurs entrants/sortants (@CsvSource).
+
+    @Timeout                                                 Si vous testez une méthode qui ne doit pas être trop lente,
+                                                             vous pouvez la forcer à échouer le test.
+
+    */
 }
