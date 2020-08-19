@@ -173,5 +173,7 @@ public class CalculatorTest {
     Dans tous les cas, ce n’est que la partie émergée de l’iceberg. Parcourez la documentation de AssertJ pour
     découvrir toute l'API que vous pouvez utiliser. Et si vous aimez le Seigneur des Anneaux, les exemples utilisés
     dans cette documentation sont faits pour vous !
+
+    Passage à la branche p1ch6
     */
 }
