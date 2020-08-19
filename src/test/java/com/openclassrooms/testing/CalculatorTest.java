@@ -3,6 +3,9 @@ package com.openclassrooms.testing;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.text.MessageFormat;
 import java.time.Duration;
@@ -10,7 +13,7 @@ import java.time.Instant;
 
 class CalculatorTest {
     //variables de l'instance en cours du calculateur et une variable de temps du début des tests
-    private Calculator calculatorunderTest;
+    private Calculator calculatorUnderTest;
     private static Instant startedAt;
 
     // =================================================================================================================
@@ -20,7 +23,7 @@ class CalculatorTest {
     @BeforeEach // executer cette méthode avant chaque test
     public void initCalculator() {
         System.out.println("Appel avant chaque test");
-        calculatorunderTest = new Calculator();
+        calculatorUnderTest = new Calculator();
     }
     // Il faut à présent supprimer les initialisations de Calculator dans les méthodes de tests
     // pour utiliser l'instance calculatorUnderTest
@@ -32,7 +35,7 @@ class CalculatorTest {
         int b = 3;
 
         // Act
-        int somme = calculatorunderTest.add(a, b);
+        int somme = calculatorUnderTest.add(a, b);
 
         // Assert
         assertEquals(5, somme);
@@ -45,7 +48,7 @@ class CalculatorTest {
         int b = 11;
 
         // Act
-        int produit = calculatorunderTest.multiply(a, b);
+        int produit = calculatorUnderTest.multiply(a, b);
 
         // Assert
         assertEquals(462, produit);
@@ -60,7 +63,7 @@ class CalculatorTest {
     @AfterEach
     public void undefCalculator() {
         System.out.println("Appel après chaque test");
-        calculatorunderTest = null;
+        calculatorUnderTest = null;
     }
     // =================================================================================================================
     // Enfin, pour l'objectif 3 (mesurer le temps de traitement de l'ensemble des tests de CalculatorTest),
@@ -108,4 +111,95 @@ class CalculatorTest {
     //  * étape Act : j'effectue l'action sur la classe à tester ;
     //  * étape Assert : je vérifie les résultats (sortants) de l'action.
 
+    // JUnit 5 vous simplifie la vie ! Grâce à l'annotation @ParameterizedTest, à la place de @Test.
+    // Voyons cela de plus près.
+
+    // Nous allons fournir les différents entrants possibles avec l'annotation @ValueSource. Cette annotation accepte
+    // tous les types primitifs Java standard comme les valeurs ints, longs, strings, etc.
+
+    // Ensuite, la méthode de test elle-même est dotée d'un argument. Cela donne le résultat ci-dessous.
+
+    @ParameterizedTest(name = "{0} X 0 doit être égal à 0")
+    @ValueSource(ints = {1, 2, 42, 1011, 5089})
+    public void multiply_shouldReturnZero_ofZeroWithMultipleIntegers(int arg) {
+        // Arrange -- tout est prêt!
+
+        // Act -- multiplayer par zéro
+        int actualResult = calculatorUnderTest.multiply(arg, 0);
+
+        // Assert -- ça vaut toujours zéro !
+        assertEquals(0, actualResult);
+    }
+
+    // Sympathique, non ? Et avez-vous remarqué que l'annotation @ParametrizedTest accepte un paramètre pour formater
+    // le nom du test en fonction du paramètre ?
+
+    // Mais, à quoi cela sert ?
+    //Eh bien, cela améliore l'affichage du résultat dans JUnit. Sans ce paramètre, voici ce que cela donne :
+
+    //           Image bien rangée Résultat d'un @ParameterizedTest avec paramètre de formatage
+
+    // Bon, une liste d'entrants, c'est pas mal, mais vous aimeriez peut-être que votre test ait plusieurs paramètres ?
+    // Par exemple, pour tester l'addition, fournir une liste d'éléments contenant chacun deux nombres entrants et la
+    // somme attendue de ces deux nombres ?
+
+    // JUnit 5 a une annotation pour cela. Vous pouvez utiliser @CsvSourse à la place de @ValueSource.
+    // Voici un exemple d'utilisation :
+
+    @ParameterizedTest(name = "{0} + {1} should be equal to {2}")
+    @CsvSource({"1,1,2", "2,3,5", "42,57,99"})
+    public void add_shouldReturnTheSum_ofMultipleIntegers(int arg1, int arg2, int expectResult) {
+        // Arrange -- Tout est prêt !
+
+        // Act
+        int actualResult = calculatorUnderTest.add(arg1, arg2);
+
+        // Assert
+        assertEquals(expectResult, actualResult);
+    }
+
+    // La liste d'entrants/sortants est formatée sous forme de chaînes de caractères, et chaque chaîne possède un jeu
+    // de paramètres, séparé par des virgules. Dans l'exemple ci-dessus, les triplets de valeur :
+
+    // * 1, 1 et 2
+    // * 2, 3 et 5
+    // * 42, 57 et 99
+
+    // représentent chacun un jeu de paramètres. Et comme vous pouvez le voir, chacun de ces jeux de paramètres est
+    // utilisable pour la méthode de test, mais aussi pour le formatage du nom du test affiché dans les résultats JUnit
+
+    //                        Résultat d'un test paramétré avec jeux de paramètres
+
+    //==================================================================================================================
+    //                               Testez la vitesse de vos traitements
+    //==================================================================================================================
+
+    // Certaines fonctionnalités peuvent prendre du temps à être traitées. Si vous souhaitez vérifier que ce délai
+    // ne soit pas trop long, vous pouvez décider de faire échouer le test à partir d'un délai que vous estimez
+    // trop long.
+
+    // L'annotation @Timeout est fait pour ça. Elle prend en argument le délai à partir duquel vous souhaitez faire
+    // échouer le test (en secondes par défaut) :
+
+    @Timeout(1) //je dis que si ca dépasse une seconde alors c'est pas bon
+    @Test
+    public void longCalcul_shouldComputeInLessThan1Second() {
+
+        //Arrange
+
+        // Act
+        calculatorUnderTest.longCalculation();// par default cette méthode Thread.sleep(2000) va durer 2 secs (ça dépasse)
+
+        // Assert
+        // ...
+
+    }
+
+    // Dans ce cas, votre test échouera au bout d'une seconde. Si vous remplacez la valeur 2 000 par 500
+    // (en ms, c'est-à-dire une demi-seconde) dans longCalculation, votre test passera en succès au bout d'une
+    // demi-seconde !
+
+    // N'abusez pas de l'annotation @Timeout. En effet, dans un travail d'équipe, tout le monde peut exécuter
+    // les tests, et vous ne maîtrisez pas la puissance de la machine qui va exécuter les tests. Vous risqueriez
+    // d'obtenir des faux positifs à cause d'un ordinateur lent ou d'un serveur surchargé.
 }
